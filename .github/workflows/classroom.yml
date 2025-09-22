@@ -9,7 +9,7 @@ on:
 permissions:
   checks: write
   actions: read
-  contents: read
+  contents: write  # Nécessaire pour pousser le fichier feedback.md
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
@@ -404,6 +404,7 @@ jobs:
         runners: test-1a,test-1b,test-1c,test-2a,test-2b,test-2c,test-3a,test-3b,test-3c,test-4a,test-4b,test-5a,test-5b,test-6a,test-6b,test-6c,test-6d,test-6e,test-7a,test-7b,test-7c,test-7d,test-7e,test-8a,test-8b,test-8c,test-8d,test-8e,test-8f,test-8g,test-9a,test-9b,test-9c,test-9d,test-9e,test-9f,test-9g,test-9h
     
     - name: Generate Feedback Report
+      if: always()  # S'exécute même si des tests échouent
       run: |
         echo "# 📋 Rapport de Feedback Automatique" > feedback.md
         echo "" >> feedback.md
@@ -545,6 +546,7 @@ jobs:
         echo "*Ce rapport a été généré automatiquement par GitHub Actions*" >> feedback.md
 
     - name: Commit Feedback Report
+      if: always()  # S'exécute même si des tests échouent
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
