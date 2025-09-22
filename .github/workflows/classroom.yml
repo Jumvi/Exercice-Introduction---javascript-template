@@ -360,6 +360,7 @@ jobs:
         timeout: 10
         max-score: 1
     - name: Autograding Reporter
+      id: reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
         TEST-1A_RESULTS: "${{steps.test-1a.outputs.result}}"
@@ -403,147 +404,9 @@ jobs:
       with:
         runners: test-1a,test-1b,test-1c,test-2a,test-2b,test-2c,test-3a,test-3b,test-3c,test-4a,test-4b,test-5a,test-5b,test-6a,test-6b,test-6c,test-6d,test-6e,test-7a,test-7b,test-7c,test-7d,test-7e,test-8a,test-8b,test-8c,test-8d,test-8e,test-8f,test-8g,test-9a,test-9b,test-9c,test-9d,test-9e,test-9f,test-9g,test-9h
     
-    - name: Generate Feedback Report
+    - name: Ajouter le rapport dans feedback.md
       if: always()  # S'exécute même si des tests échouent
-      run: |
-        echo "# 📋 Rapport de Feedback Automatique" > feedback.md
-        echo "" >> feedback.md
-        echo "Date: $(date '+%d/%m/%Y à %H:%M')" >> feedback.md
-        echo "Commit: ${{ github.sha }}" >> feedback.md
-        echo "" >> feedback.md
-        echo "## 📊 Résumé des Tests" >> feedback.md
-        echo "" >> feedback.md
-        
-        # Fonction pour analyser les résultats et donner des conseils
-        analyze_result() {
-          local test_name=$1
-          local result=$2
-          local exercise_num=$3
-          local sub_exercise=$4
-          
-          if [[ "$result" == "success" ]]; then
-            echo "✅ **$test_name** : Réussi ! Excellent travail !" >> feedback.md
-          else
-            echo "❌ **$test_name** : Échec" >> feedback.md
-            echo "" >> feedback.md
-            
-            # Conseils spécifiques selon l'exercice
-            case "$exercise_num$sub_exercise" in
-              "1a")
-                echo "   💡 **Conseil** : Assurez-vous d'ajouter au moins un commentaire dans votre code avec \`//\` ou \`/* */\`" >> feedback.md
-                echo "   📖 **Exemple** : \`// Ceci est un commentaire\`" >> feedback.md
-                ;;
-              "1b")
-                echo "   💡 **Conseil** : Utilisez \`console.log()\` pour afficher du texte dans la console" >> feedback.md
-                echo "   📖 **Exemple** : \`console.log(\"Hello World!\");\`" >> feedback.md
-                ;;
-              "1c")
-                echo "   💡 **Conseil** : Déclarez une variable avec \`let\` ou \`const\`" >> feedback.md
-                echo "   📖 **Exemple** : \`let maVariable = \"valeur\";\`" >> feedback.md
-                ;;
-              "2a")
-                echo "   💡 **Conseil** : Déclarez une variable 'nom' avec le mot-clé \`let\`" >> feedback.md
-                echo "   📖 **Exemple** : \`let nom = \"votre nom\";\`" >> feedback.md
-                ;;
-              "2b")
-                echo "   💡 **Conseil** : Utilisez \`const\` pour déclarer une variable constante 'age'" >> feedback.md
-                echo "   📖 **Exemple** : \`const age = 25;\`" >> feedback.md
-                ;;
-              "2c")
-                echo "   💡 **Conseil** : Affichez la variable avec \`console.log()\`" >> feedback.md
-                echo "   📖 **Exemple** : \`console.log(nom);\`" >> feedback.md
-                ;;
-              "3a")
-                echo "   💡 **Conseil** : Concaténez des chaînes avec l'opérateur \`+\`" >> feedback.md
-                echo "   📖 **Exemple** : \`let phrase = \"Bonjour \" + nom;\`" >> feedback.md
-                ;;
-              "3b")
-                echo "   💡 **Conseil** : Utilisez les template literals avec des backticks \`\`\`" >> feedback.md
-                echo "   📖 **Exemple** : \`let phrase = \\\`Bonjour \${nom}\\\`;\`" >> feedback.md
-                ;;
-              "4a"|"4b")
-                echo "   💡 **Conseil** : Utilisez les opérateurs arithmétiques (+, -, *, /)" >> feedback.md
-                echo "   📖 **Exemple** : \`let resultat = nombre1 + nombre2;\`" >> feedback.md
-                ;;
-              "5a"|"5b")
-                echo "   💡 **Conseil** : Utilisez les opérateurs de comparaison (==, ===, !=, <, >)" >> feedback.md
-                echo "   📖 **Exemple** : \`let estEgal = (a === b);\`" >> feedback.md
-                ;;
-              "6"*)
-                echo "   💡 **Conseil** : Vérifiez les types de données (string, number, boolean, etc.)" >> feedback.md
-                echo "   📖 **Exemple** : \`typeof variable\` pour vérifier le type" >> feedback.md
-                ;;
-              "7"*|"8"*|"9"*)
-                echo "   💡 **Conseil** : Relisez l'énoncé et vérifiez la syntaxe des opérateurs" >> feedback.md
-                echo "   📖 **Aide** : Consultez la documentation MDN pour plus d'exemples" >> feedback.md
-                ;;
-            esac
-            echo "" >> feedback.md
-          fi
-        }
-        
-        # Analyse de tous les résultats
-        analyze_result "Test 1a" "${{steps.test-1a.outputs.result}}" "1" "a"
-        analyze_result "Test 1b" "${{steps.test-1b.outputs.result}}" "1" "b"
-        analyze_result "Test 1c" "${{steps.test-1c.outputs.result}}" "1" "c"
-        analyze_result "Test 2a" "${{steps.test-2a.outputs.result}}" "2" "a"
-        analyze_result "Test 2b" "${{steps.test-2b.outputs.result}}" "2" "b"
-        analyze_result "Test 2c" "${{steps.test-2c.outputs.result}}" "2" "c"
-        analyze_result "Test 3a" "${{steps.test-3a.outputs.result}}" "3" "a"
-        analyze_result "Test 3b" "${{steps.test-3b.outputs.result}}" "3" "b"
-        analyze_result "Test 3c" "${{steps.test-3c.outputs.result}}" "3" "c"
-        analyze_result "Test 4a" "${{steps.test-4a.outputs.result}}" "4" "a"
-        analyze_result "Test 4b" "${{steps.test-4b.outputs.result}}" "4" "b"
-        analyze_result "Test 5a" "${{steps.test-5a.outputs.result}}" "5" "a"
-        analyze_result "Test 5b" "${{steps.test-5b.outputs.result}}" "5" "b"
-        
-        # Compter les succès et échecs
-        total_tests=0
-        passed_tests=0
-        
-        for result in "${{steps.test-1a.outputs.result}}" "${{steps.test-1b.outputs.result}}" "${{steps.test-1c.outputs.result}}" \
-                     "${{steps.test-2a.outputs.result}}" "${{steps.test-2b.outputs.result}}" "${{steps.test-2c.outputs.result}}" \
-                     "${{steps.test-3a.outputs.result}}" "${{steps.test-3b.outputs.result}}" "${{steps.test-3c.outputs.result}}" \
-                     "${{steps.test-4a.outputs.result}}" "${{steps.test-4b.outputs.result}}" \
-                     "${{steps.test-5a.outputs.result}}" "${{steps.test-5b.outputs.result}}" \
-                     "${{steps.test-6a.outputs.result}}" "${{steps.test-6b.outputs.result}}" "${{steps.test-6c.outputs.result}}" \
-                     "${{steps.test-6d.outputs.result}}" "${{steps.test-6e.outputs.result}}" \
-                     "${{steps.test-7a.outputs.result}}" "${{steps.test-7b.outputs.result}}" "${{steps.test-7c.outputs.result}}" \
-                     "${{steps.test-7d.outputs.result}}" "${{steps.test-7e.outputs.result}}" \
-                     "${{steps.test-8a.outputs.result}}" "${{steps.test-8b.outputs.result}}" "${{steps.test-8c.outputs.result}}" \
-                     "${{steps.test-8d.outputs.result}}" "${{steps.test-8e.outputs.result}}" "${{steps.test-8f.outputs.result}}" \
-                     "${{steps.test-8g.outputs.result}}" \
-                     "${{steps.test-9a.outputs.result}}" "${{steps.test-9b.outputs.result}}" "${{steps.test-9c.outputs.result}}" \
-                     "${{steps.test-9d.outputs.result}}" "${{steps.test-9e.outputs.result}}" "${{steps.test-9f.outputs.result}}" \
-                     "${{steps.test-9g.outputs.result}}" "${{steps.test-9h.outputs.result}}"; do
-          total_tests=$((total_tests + 1))
-          if [[ "$result" == "success" ]]; then
-            passed_tests=$((passed_tests + 1))
-          fi
-        done
-        
-        echo "" >> feedback.md
-        echo "## 📈 Score Global" >> feedback.md
-        echo "" >> feedback.md
-        echo "**Score: $passed_tests/$total_tests tests réussis**" >> feedback.md
-        
-        if [[ $passed_tests -eq $total_tests ]]; then
-          echo "🎉 **Félicitations !** Tous les tests sont réussis ! Excellent travail !" >> feedback.md
-        elif [[ $passed_tests -gt $((total_tests / 2)) ]]; then
-          echo "👍 **Bon travail !** Vous êtes sur la bonne voie. Continuez ainsi !" >> feedback.md
-        else
-          echo "💪 **Continuez vos efforts !** Relisez les énoncés et utilisez les conseils ci-dessus." >> feedback.md
-        fi
-        
-        echo "" >> feedback.md
-        echo "## 🔗 Ressources Utiles" >> feedback.md
-        echo "" >> feedback.md
-        echo "- [MDN JavaScript](https://developer.mozilla.org/fr/docs/Web/JavaScript)" >> feedback.md
-        echo "- [JavaScript.info](https://fr.javascript.info/)" >> feedback.md
-        echo "- [W3Schools JavaScript](https://www.w3schools.com/js/)" >> feedback.md
-        echo "" >> feedback.md
-        echo "---" >> feedback.md
-        echo "*Ce rapport a été généré automatiquement par GitHub Actions*" >> feedback.md
+      run: echo "${{ steps.reporter.outputs.report }}" > feedback.md
 
     - name: Commit Feedback Report
       if: always()  # S'exécute même si des tests échouent
